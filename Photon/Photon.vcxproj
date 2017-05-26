@@ -132,16 +132,28 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dep\glad\glad.c" />
+    <ClCompile Include="photon\gfx\Model.cpp" />
+    <ClCompile Include="photon\Engine.cpp" />
+    <ClCompile Include="photon\gfx\Material.cpp" />
     <ClCompile Include="photon\facility\Logger.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="photon\util\Transform.cpp" />
+    <ClCompile Include="photon\gfx\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dep\glad\glad.h" />
     <ClInclude Include="dep\glad\KHR.h" />
     <ClInclude Include="dep\rang.h" />
+    <ClInclude Include="photon\gfx\Model.h" />
+    <ClInclude Include="photon\Engine.h" />
+    <ClInclude Include="photon\gfx\Material.h" />
     <ClInclude Include="photon\facility\Logger.h" />
     <ClInclude Include="photon\util\Transform.h" />
+    <ClInclude Include="photon\gfx\Shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\normal.frag" />
+    <None Include="res\normal.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

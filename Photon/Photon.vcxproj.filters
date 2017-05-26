@@ -27,6 +27,18 @@
     <ClCompile Include="photon\util\Transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="photon\gfx\Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="photon\gfx\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="photon\Engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="photon\gfx\Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dep\glad\glad.h">
@@ -44,5 +56,21 @@
     <ClInclude Include="photon\util\Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="photon\gfx\Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="photon\gfx\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="photon\Engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="photon\gfx\Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\normal.vert" />
+    <None Include="res\normal.frag" />
   </ItemGroup>
 </Project>
