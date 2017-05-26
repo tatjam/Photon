@@ -14,7 +14,7 @@ int main()
 	int wwidth = 512;
 	int wheight = 512;
 
-	l(INF) << "Starting GLFW context, OpenGL 3.3";
+	l(INF) << "Starting GLFW context, OpenGL 3.3" << endl;
 
 	// Init GLFW
 	glfwInit();
@@ -28,7 +28,7 @@ int main()
 	GLFWwindow* window = glfwCreateWindow(wwidth, wheight, "Hello World!", nullptr, nullptr);
 	if (window == nullptr)
 	{
-		l(FTL) << "Failed to create GLFW window!";
+		l(FTL) << "Failed to create GLFW window!" << endl;
 		glfwTerminate();
 		return -1;
 	}
@@ -38,12 +38,13 @@ int main()
 	// Load GL functions
 	if (!gladLoadGL())
 	{
-		l(FTL) << "Could not load GL functions (glad error)!";
+		l(FTL) << "Could not load GL functions (glad error)!" << endl;
 		glfwTerminate();
 		return -1;
 	}
 
-	l(WIN) << "Created window and GL context!";
+	l(WIN) << "Created window and GL context! Context info: " << endl;
+	l(INF) << (char*)glGetString(GL_VERSION) << "|" << (char*)glGetString(GL_VENDOR) << "|" << (char*)glGetString(GL_RENDERER) << endl; 
 
 	// Define the viewport dimensions
 	int width, height;

@@ -9,8 +9,13 @@
 #include <ostream>
 #include <chrono>
 #include <ctime>
+#include <sstream>
+#include <vector>
+#include <iomanip>
 
 #include "../../dep/rang.h"
+
+#define endl "$$END$$"
 
 namespace ph
 {
@@ -34,11 +39,19 @@ namespace ph
 
 		std::string formMessageBase();
 
+		std::stringstream* buff;
+
+		void finish();
+
 	public:
 
 		LogLevel cLevel;
 
+		std::string end();
+
 		std::vector<std::ostream*> streams;
+
+		//Logger& operator<<(Logger& op);
 
 		Logger& operator<<(const std::string& msg);
 
