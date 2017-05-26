@@ -18,27 +18,24 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="photon\dep\glad\glad.c">
+    <ClCompile Include="dep\glad\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="photon\gfx\Mesh.cpp">
+    <ClCompile Include="photon\facility\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="photon\dep\glad\glad.h">
+    <ClInclude Include="dep\glad\glad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="photon\dep\glad\KHR.h">
+    <ClInclude Include="dep\glad\KHR.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="photon\dep\tiny_obj_loader.h">
+    <ClInclude Include="photon\facility\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="photon\dep\stb_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="photon\gfx\Mesh.h">
+    <ClInclude Include="dep\rang.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
