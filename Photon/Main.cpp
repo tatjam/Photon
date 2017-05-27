@@ -36,10 +36,10 @@ int main()
 	engine.log = Logger();
 	gl = &engine;
 
-	int wwidth = 512;
-	int wheight = 512;
+	int wwidth = 1024;
+	int wheight = 780;
 
-	engine.log(INF) << "Starting GLFW context, OpenGL 3.3" << endl;
+	engine.log(INF) << "Starting GLFW context, OpenGL 3.3" << endlog;
 
 	// Init GLFW
 	glfwInit();
@@ -53,7 +53,7 @@ int main()
 	GLFWwindow* window = glfwCreateWindow(wwidth, wheight, "Hello World!", nullptr, nullptr);
 	if (window == nullptr)
 	{
-		engine.log(FTL) << "Failed to create GLFW window!" << endl;
+		engine.log(FTL) << "Failed to create GLFW window!" << endlog;
 		glfwTerminate();
 		return -1;
 	}
@@ -65,32 +65,22 @@ int main()
 	// Load GL functions
 	if (!gladLoadGL())
 	{
-		engine.log(FTL) << "Could not load GL functions (glad error)!" << endl;
+		engine.log(FTL) << "Could not load GL functions (glad error)!" << endlog;
 		glfwTerminate();
 		return -1;
 	}
 
-	engine.log(WIN) << "Created window and GL context! Context info: " << endl;
-	engine.log(INF) << (char*)glGetString(GL_VERSION) << "|" << (char*)glGetString(GL_VENDOR) << "|" << (char*)glGetString(GL_RENDERER) << endl; 
+	engine.log(WIN) << "Created window and GL context! Context info: " << endlog;
+	engine.log(INF) << 
+		(char*)glGetString(GL_VERSION) << "|" << 
+		(char*)glGetString(GL_VENDOR) << "|" << (char*)glGetString(GL_RENDERER) << endlog; 
 
 
 	Shader shader(&engine);
 	shader.load("res/normal.vert", "res/normal.frag");
 
-	Mesh mesh;
-	mesh.vertices.push_back(vVertex({ -0.5, 0, 0 }, { 0, 0, 1 }, { 0, 0 }));
-	mesh.vertices.push_back(vVertex({ 0.5, 0, 0 }, { 0, 1, 0 }, { 1, 0 }));
-	mesh.vertices.push_back(vVertex({ 0.5, 0.5, 0 }, { 0, 1, 1 }, { 1, 1 }));
-	mesh.vertices.push_back(vVertex({ 0, 0.5, 0 }, { 1, 0, 0 }, { 0, 1 }));
-
-	mesh.indices.push_back(0);
-	mesh.indices.push_back(1);
-	mesh.indices.push_back(2);
-	mesh.indices.push_back(0);
-	mesh.indices.push_back(3);
-	mesh.indices.push_back(2);
-
-	mesh.create();
+	Model m = Model(&engine);
+	m.load("res/test.obj");
 
 	// Define the viewport dimensions
 	int width, height;
@@ -102,8 +92,8 @@ int main()
 	glm::mat4 proj;
 
 	world = glm::translate(world, { 0, 0, 0 });
-	view = glm::translate(world, { 0, 0, -2.5 });
-	proj = glm::perspective(glm::radians(80.0f), 1.0f, 0.05f, 100.0f);
+	view = glm::translate(world, { 2, 0, -4.5 });
+	proj = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.05f, 500.0f);
 
 	//proj = glm::perspective()
 
@@ -134,6 +124,7 @@ int main()
 
 		engine.postUpdate(dt);
 
+
 		if (wireframe)
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -144,13 +135,8 @@ int main()
 		}
 
 
-		world = glm::rotate(world, rad(45.0f) * dt, glm::vec3(0, 1, 0));
-
-
-
-
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		mesh.render(world, view, proj, &shader);
+		m.render(world, view, proj, &shader);
 
 		// Swap the screen buffers
 		glfwSwapBuffers(window);

@@ -10,7 +10,7 @@ namespace ph
 
 	void Shader::load(std::string vpath, std::string fpath)
 	{
-		en->log(INF) << "Loading shaders: (" << vpath << ", " << fpath << ")" << endl;
+		en->log(INF) << "Loading shaders: (" << vpath << ", " << fpath << ")" << endlog;
 
 		std::string vertexCode;
 		std::string fragmentCode;
@@ -36,7 +36,7 @@ namespace ph
 		}
 		catch (std::exception e)
 		{
-			en->log(ERR) << "Could not load shader files" << endl;
+			en->log(ERR) << "Could not load shader files" << endlog;
 		}
 		const GLchar* vShaderCode = vertexCode.c_str();
 		const GLchar * fShaderCode = fragmentCode.c_str();
@@ -50,7 +50,7 @@ namespace ph
 		if (!success)
 		{
 			glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-			en->log(ERR) << "Could not compile vertex shader: " << infoLog << endl;
+			en->log(ERR) << "Could not compile vertex shader: " << infoLog << endlog;
 		}
 		fragment = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragment, 1, &fShaderCode, NULL);
@@ -59,7 +59,7 @@ namespace ph
 		if (!success)
 		{
 			glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-			en->log(ERR) << "Could not compile fragment shader: " << infoLog << endl;
+			en->log(ERR) << "Could not compile fragment shader: " << infoLog << endlog;
 		}
 		this->pr = glCreateProgram();
 		glAttachShader(this->pr, vertex);
@@ -69,14 +69,14 @@ namespace ph
 		if (!success)
 		{
 			glGetProgramInfoLog(this->pr, 512, NULL, infoLog);
-			en->log(ERR) << "Could not link program: " << infoLog << endl;
+			en->log(ERR) << "Could not link program: " << infoLog << endlog;
 		}
 		glDeleteShader(vertex);
 		glDeleteShader(fragment);
 
 		if (success)
 		{
-			en->log(WIN) << "Loaded shader successfully!" << endl;
+			en->log(WIN) << "Loaded shader successfully!" << endlog;
 		}
 
 	}

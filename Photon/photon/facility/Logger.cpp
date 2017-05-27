@@ -38,7 +38,7 @@ namespace ph
 
 	std::string Logger::end()
 	{
-		return endl;
+		return endlog;
 	}
 
 	void Logger::finish()
@@ -91,9 +91,20 @@ namespace ph
 
 	Logger& Logger::operator<<(const std::string& msg)
 	{
-		if (msg == endl)
+		if (msg == endlog)
 		{
+			/*buff->seekg(-1, std::ios::end);//get to the last character in the buffer
+			char last_char;
+			*buff >> last_char;
 			*buff << "\n";
+			if (last_char != '\n')
+			{
+				*buff << "\n";
+			}
+			*/
+
+			*buff << '\n';
+
 			finish();
 		}
 		else

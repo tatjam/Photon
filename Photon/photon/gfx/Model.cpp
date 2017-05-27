@@ -1,5 +1,8 @@
 #include "Model.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "../../dep/tiny_obj_loader.h"
+
 
 namespace ph
 {
@@ -64,8 +67,111 @@ namespace ph
 		glBindVertexArray(0);
 	}
 
-	Model::Model()
+	void Model::render(glm::mat4 world, glm::mat4 view, glm::mat4 proj, Shader* shader)
 	{
+		for (int i = 0; i < meshes.size(); i++)
+		{
+			meshes[i].render(world, view, proj, shader);
+		}
+	}
+
+	void Model::load(std::string objpath)
+	{
+		e->log(INF) << "Loading obj file: " << objpath << endlog;
+		tinyobj::attrib_t attrib;
+		std::vector<tinyobj::shape_t> shapes;
+		std::vector<tinyobj::material_t> materials;
+
+		std::string err;
+		int flags = 1;
+		bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, 
+			objpath.c_str(), FileUtil::stripFilename(objpath).c_str(), true);
+
+		bool errors = false;
+
+		if (!err.empty())
+		{
+			e->log(ERR) << err << endlog;
+			errors = true;
+		}
+
+		if (!ret)
+		{
+			e->log(ERR) << "Could not load object file, aborting!" << endlog;
+			return;
+		}
+
+		// Read obj data
+
+		// Over every shape
+
+		Vertex worker = Vertex();
+
+		for (int i = 0; i < shapes.size(); i++)
+		{
+
+			Mesh n = Mesh();
+
+			int indexOffset = 0;
+
+			int vIndex = 0;
+
+			// Loop over every polygon
+			for (int p = 0; p < shapes[i].mesh.num_face_vertices.size(); p++)
+			{
+				int fv = shapes[i].mesh.num_face_vertices[p];
+
+				for (int v = 0; v < fv; v++)
+				{
+					// Vertex data
+					tinyobj::index_t idx = shapes[i].mesh.indices[indexOffset + v];
+					tinyobj::real_t vx = attrib.vertices[3 * idx.vertex_index + 0];
+					tinyobj::real_t vy = attrib.vertices[3 * idx.vertex_index + 1];
+					tinyobj::real_t vz = attrib.vertices[3 * idx.vertex_index + 2];
+					tinyobj::real_t nx = attrib.normals[3 * idx.normal_index + 0];
+					tinyobj::real_t ny = attrib.normals[3 * idx.normal_index + 1];
+					tinyobj::real_t nz = attrib.normals[3 * idx.normal_index + 2];
+					tinyobj::real_t tx = 0;
+					tinyobj::real_t ty = 0;
+					if (!attrib.texcoords.empty())
+					{
+					    tx = attrib.texcoords[2 * idx.texcoord_index + 0];
+						ty = attrib.texcoords[2 * idx.texcoord_index + 1];
+					}
+
+					worker.pX = vx; worker.pY = vy; worker.pZ = vz;
+					worker.nX = nx; worker.nY = ny; worker.nZ = nz;
+					n.vertices.push_back(worker);
+					n.indices.push_back(vIndex);
+					vIndex++;
+				}
+
+				indexOffset += fv;
+
+				// Material (TODO)
+				//shapes[i].mesh.material_ids[p];
+
+			}
+
+
+			n.create();
+			meshes.push_back(n);
+		}
+
+		if (!errors)
+		{
+			e->log(WIN) << "Obj file loaded successfully!" << endlog;
+		}
+		else
+		{
+			e->log(WRN) << "Obj file loaded with errors, check log behind" << endlog;
+		}
+
+	}
+
+	Model::Model(Engine* en)
+	{
+		e = en;
 	}
 
 

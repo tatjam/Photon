@@ -15,7 +15,7 @@
 
 #include "../../dep/rang.h"
 
-#define endl "$$END$$"
+#define endlog "$$END$$"
 
 namespace ph
 {

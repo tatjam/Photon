@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dep\glad\glad.c" />
+    <ClCompile Include="photon\util\FileUtil.cpp" />
     <ClCompile Include="photon\gfx\Model.cpp" />
     <ClCompile Include="photon\Engine.cpp" />
     <ClCompile Include="photon\gfx\Material.cpp" />
@@ -145,6 +146,8 @@
     <ClInclude Include="dep\glad\KHR.h" />
     <ClInclude Include="dep\json.h" />
     <ClInclude Include="dep\rang.h" />
+    <ClInclude Include="dep\tiny_obj_loader.h" />
+    <ClInclude Include="photon\util\FileUtil.h" />
     <ClInclude Include="photon\gfx\Model.h" />
     <ClInclude Include="photon\Engine.h" />
     <ClInclude Include="photon\gfx\Material.h" />

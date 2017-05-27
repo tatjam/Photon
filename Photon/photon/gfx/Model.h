@@ -9,7 +9,9 @@
 
 #include "Shader.h"
 
+#include "../../dep/tiny_obj_loader.h"
 
+#include "../util/FileUtil.h"
 
 namespace ph
 {
@@ -43,15 +45,19 @@ namespace ph
 	{
 	public:
 
-	
+		Engine* e;
+
 		// ???
 		std::vector<Mesh> meshes;
 
-		void render(glm::mat4 world, glm::mat4 view, glm::mat4 proj);
+		void render(glm::mat4 world, glm::mat4 view, glm::mat4 proj, Shader* shader);
 
+		// TODO: Optimize stuff for our indexed renderer
+		// Basically make shared vertices disappear
 
+		void load(std::string objpath);
 
-		Model();
+		Model(Engine* en);
 		~Model();
 	};
 
