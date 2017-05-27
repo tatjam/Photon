@@ -7,5 +7,6 @@ out vec4 color;
 
 void main()
 {
-	color = vec4(reflect(normal, wPos) , 1.0f);
+	vec3 fcolor = normal;
+	color = vec4(fcolor , 1.0f);
 }

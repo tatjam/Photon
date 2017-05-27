@@ -16,5 +16,5 @@ void main()
 	gl_Position = proj * view * world * vec4(pos, 1.0f);
 	//gl_Position = vec4(pos, 1.0f);
 	normal = nor;
-	wPos = (vec4(pos, 1.0f) * world).xyz;
+	wPos = (world * vec4(pos, 1.0f)).xyz;
 }

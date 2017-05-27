@@ -42,6 +42,9 @@
     <ClCompile Include="photon\util\FileUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="photon\gfx\SceneRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dep\glad\glad.h">
@@ -80,9 +83,17 @@
     <ClInclude Include="dep\tiny_obj_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="photon\gfx\Drawable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="photon\gfx\SceneRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\normal.vert" />
-    <None Include="res\normal.frag" />
+    <None Include="res\shader\normal.frag" />
+    <None Include="res\shader\normal.vert" />
+    <None Include="res\shader\fullscreen.frag" />
+    <None Include="res\shader\fullscreen.vert" />
   </ItemGroup>
 </Project>

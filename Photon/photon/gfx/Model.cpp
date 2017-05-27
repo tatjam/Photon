@@ -67,11 +67,11 @@ namespace ph
 		glBindVertexArray(0);
 	}
 
-	void Model::render(glm::mat4 world, glm::mat4 view, glm::mat4 proj, Shader* shader)
+	void Model::render()
 	{
 		for (int i = 0; i < meshes.size(); i++)
 		{
-			meshes[i].render(world, view, proj, shader);
+			meshes[i].render(world, view, proj, s);
 		}
 	}
 
@@ -169,9 +169,10 @@ namespace ph
 
 	}
 
-	Model::Model(Engine* en)
+	Model::Model(Engine* en, Shader* s)
 	{
 		e = en;
+		this->s = s;
 	}
 
 

@@ -26,7 +26,6 @@ namespace ph
 		
 		if (action == GLFW_PRESS)
 		{
-			printf("PRESS!");
 			SET_BIT(keys[key], 0);
 			SET_BIT(keys[key], 1);
 		}

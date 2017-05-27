@@ -12,6 +12,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "photon/gfx/SceneRenderer.h"
 
 using namespace ph;
 
@@ -77,9 +78,12 @@ int main()
 
 
 	Shader shader(&engine);
-	shader.load("res/normal.vert", "res/normal.frag");
+	shader.load("res/shader/normal.vert", "res/shader/normal.frag");
 
-	Model m = Model(&engine);
+	Shader fullshader(&engine);
+	fullshader.load("res/shader/fullscreen.vert", "res/shader/fullscreen.frag");
+
+	Model m = Model(&engine, &shader);
 	m.load("res/test.obj");
 
 	// Define the viewport dimensions
@@ -93,7 +97,7 @@ int main()
 
 	world = glm::translate(world, { 0, 0, 0 });
 	view = glm::translate(world, { 2, 0, -4.5 });
-	proj = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.05f, 500.0f);
+	proj = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.05f, 250.0f);
 
 	//proj = glm::perspective()
 
@@ -104,22 +108,38 @@ int main()
 	float dt = 0.0f;
 	float rdt = 0.0f;
 
-	glfwSwapInterval(1);
+	glfwSwapInterval(0);
 
 	double prevTime = 0.0;
 
 	float timer = 0.0f;
 	float slowTimer = 0.0f;
 	// Game loop
+
+	m.view = view;
+	m.proj = proj;
+
+	std::vector<Drawable*> dr;
+
+	dr.push_back(&m);
+
+	SceneRenderer renderer = SceneRenderer(&dr, width, height, &engine, &fullshader);
+
 	while (!glfwWindowShouldClose(window))
 	{		
+
+		world = glm::rotate(world, rad(25.0f) * dt, { 0, 1, 0 });
+		world = glm::rotate(world, rad(25.0f) * dt, { 1, 0, 0 });
+
+		m.world = world;
+
 		prevTime = glfwGetTime();
 
 		glfwPollEvents();
 
 		if (engine.keyPress(GLFW_KEY_W))
 		{
-			wireframe = !wireframe;
+			renderer.wireframe = !renderer.wireframe;
 		}
 
 		engine.postUpdate(dt);
@@ -136,7 +156,8 @@ int main()
 
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		m.render(world, view, proj, &shader);
+
+		renderer.render();
 
 		// Swap the screen buffers
 		glfwSwapBuffers(window);

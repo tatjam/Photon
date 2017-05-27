@@ -13,6 +13,8 @@
 
 #include "../util/FileUtil.h"
 
+#include "Drawable.h"
+
 namespace ph
 {
 
@@ -41,23 +43,28 @@ namespace ph
 	Vertex vVertex(glm::vec3 pos, glm::vec3 nrm, glm::vec2 tex);
 
 
-	class Model
+	class Model : public Drawable
 	{
 	public:
 
+		glm::mat4 world; glm::mat4 view; glm::mat4 proj;
+
 		Engine* e;
+
+		Shader* s;
+
 
 		// ???
 		std::vector<Mesh> meshes;
 
-		void render(glm::mat4 world, glm::mat4 view, glm::mat4 proj, Shader* shader);
+		virtual void render();
 
 		// TODO: Optimize stuff for our indexed renderer
 		// Basically make shared vertices disappear
 
 		void load(std::string objpath);
 
-		Model(Engine* en);
+		Model(Engine* en, Shader* s);
 		~Model();
 	};
 

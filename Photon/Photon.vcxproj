@@ -140,6 +140,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="photon\util\Transform.cpp" />
     <ClCompile Include="photon\gfx\Shader.cpp" />
+    <ClCompile Include="photon\gfx\SceneRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dep\glad\glad.h" />
@@ -147,6 +148,7 @@
     <ClInclude Include="dep\json.h" />
     <ClInclude Include="dep\rang.h" />
     <ClInclude Include="dep\tiny_obj_loader.h" />
+    <ClInclude Include="photon\gfx\Drawable.h" />
     <ClInclude Include="photon\util\FileUtil.h" />
     <ClInclude Include="photon\gfx\Model.h" />
     <ClInclude Include="photon\Engine.h" />
@@ -154,10 +156,13 @@
     <ClInclude Include="photon\facility\Logger.h" />
     <ClInclude Include="photon\util\Transform.h" />
     <ClInclude Include="photon\gfx\Shader.h" />
+    <ClInclude Include="photon\gfx\SceneRenderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\normal.frag" />
-    <None Include="res\normal.vert" />
+    <None Include="res\shader\fullscreen.frag" />
+    <None Include="res\shader\fullscreen.vert" />
+    <None Include="res\shader\normal.frag" />
+    <None Include="res\shader\normal.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
