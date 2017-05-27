@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClInclude Include="dep\glad\glad.h" />
     <ClInclude Include="dep\glad\KHR.h" />
+    <ClInclude Include="dep\json.h" />
     <ClInclude Include="dep\rang.h" />
     <ClInclude Include="photon\gfx\Model.h" />
     <ClInclude Include="photon\Engine.h" />

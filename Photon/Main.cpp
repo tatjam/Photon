@@ -12,16 +12,29 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+
 using namespace ph;
 
-#define rad(x) { glm::radians(x)}
+#define rad glm::radians
+#define tos std::to_string
 
+Engine* gl;
+
+void handleInput(GLFWwindow* win, int key, int scanmode, int action, int mode)
+{
+	gl->inputHandler(win, key, scanmode, action, mode);
+}
 
 int main()
 {
+
+	bool wireframe = false;
+
+	float updateInterval = 1.0f / 400.0f;
+
 	Engine engine;
 	engine.log = Logger();
-
+	gl = &engine;
 
 	int wwidth = 512;
 	int wheight = 512;
@@ -44,6 +57,8 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
+
+	glfwSetKeyCallback(window, handleInput);
 
 	glfwMakeContextCurrent(window);
 
@@ -96,14 +111,42 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 
+	float dt = 0.0f;
+	float rdt = 0.0f;
+
+	glfwSwapInterval(1);
+
+	double prevTime = 0.0;
+
+	float timer = 0.0f;
+	float slowTimer = 0.0f;
 	// Game loop
 	while (!glfwWindowShouldClose(window))
-	{
+	{		
+		prevTime = glfwGetTime();
 
-		world = glm::rotate(world, rad(1.0f), glm::vec3(0, 1, 0));
-
-		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
+
+		if (engine.keyPress(GLFW_KEY_W))
+		{
+			wireframe = !wireframe;
+		}
+
+		engine.postUpdate(dt);
+
+		if (wireframe)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+		else
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+
+
+		world = glm::rotate(world, rad(45.0f) * dt, glm::vec3(0, 1, 0));
+
+
 
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -112,8 +155,19 @@ int main()
 		// Swap the screen buffers
 		glfwSwapBuffers(window);
 
+		dt = glfwGetTime() - prevTime;
+
+		timer += dt;
 
 
+		if (timer >= 0.5f)
+		{
+			std::string dts = "FPS: ";
+			dts.append(std::to_string(1.0f / dt));
+
+			glfwSetWindowTitle(window, dts.c_str());
+			timer = 0.0f;
+		}
 
 	}
 

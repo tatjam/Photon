@@ -68,6 +68,9 @@
     <ClInclude Include="photon\gfx\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="dep\json.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\normal.vert" />
