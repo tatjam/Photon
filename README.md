@@ -1,5 +1,10 @@
 # Photon
 
+## Important information
+
+#### Radians vs Degrees
+Any function that uses angles will take either a Angle object, these can either be Degrees or Radians.
+Check documentation for more info
 
 ## Dependencies
 ----

@@ -3,6 +3,13 @@
 namespace ph
 {
 
+	void SceneRenderer::resize(int width, int height)
+	{
+		this->width = width;
+		this->height = height;
+		fillBuffers(width, height);
+	}
+
 	void SceneRenderer::fullscreenQuad()
 	{
 		glBindVertexArray(quadVAO);
@@ -10,6 +17,16 @@ namespace ph
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glBindVertexArray(0);
 	}
+
+	void SceneRenderer::genCamera(int width, int height)
+	{
+		view = glm::mat4();
+		proj = glm::mat4();
+
+		view = glm::lookAt(camera->pos, camera->target, camera->up);
+		proj = glm::perspective(camera->fov.asRadians(), (float)width / (float)height, camera->nearPlane, camera->farPlane);
+	}
+
 
 	void SceneRenderer::uploadLightScene()
 	{
@@ -38,9 +55,8 @@ namespace ph
 
 	}
 
-	void SceneRenderer::render()
+	void SceneRenderer::geometryPass()
 	{
-		// Render scene into our framebuffer
 		if (wireframe)
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -59,8 +75,10 @@ namespace ph
 				drawables->at(i)->render(view, proj);
 			}
 		}
+	}
 
-
+	void SceneRenderer::lightPass()
+	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 
@@ -75,7 +93,7 @@ namespace ph
 			glUniform1i(glGetUniformLocation(deferredShader->pr, "renderMode"), debugMode);
 
 			uploadLightScene();
-			
+
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, gPos);
 			glActiveTexture(GL_TEXTURE1);
@@ -87,7 +105,10 @@ namespace ph
 
 			fullscreenQuad();
 		}
+	}
 
+	void SceneRenderer::postPass()
+	{
 		// Last pass, post processing and finally presenting to canvas
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		{
@@ -97,8 +118,14 @@ namespace ph
 			glBindTexture(GL_TEXTURE_2D, pColor);
 			fullscreenQuad();
 		}
+	}
 
-		
+	void SceneRenderer::render()
+	{
+		genCamera(width, height);
+		geometryPass();
+		lightPass();
+		postPass();
 	}
 
 	void SceneRenderer::fillBuffers(int width, int height)
@@ -193,10 +220,12 @@ namespace ph
 	}
 
 	SceneRenderer::SceneRenderer(std::vector<Drawable*>* dr, int width, int height, 
-		Engine* engine, Shader* defShader, Shader* postShader, LightScene* scene)
+		Engine* engine, Shader* defShader, Shader* postShader, LightScene* scene, LowCamera* camera)
 	{
 		this->deferredShader = defShader;
 		this->postShader = postShader;
+
+		this->camera = camera;
 
 		this->lightScene = scene;
 		en = engine;

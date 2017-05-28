@@ -1,11 +1,13 @@
 #pragma once
 
+#include "../../glad/glad.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <vector>
 
-#include "../../glad/glad.h"
+
 
 #include "Shader.h"
 
@@ -13,19 +15,29 @@
 
 #include "../util/FileUtil.h"
 
+#include "Material.h"
+
 #include "Drawable.h"
 
 namespace ph
 {
 
-
 	struct Vertex
 	{
 		float pX, pY, pZ, nX, nY, nZ, tX, tY;
 	};
+	
+	struct LMaterial
+	{
+
+	};
 
 	struct Mesh
 	{
+		LMaterial lmat;
+
+		Material* mat;
+
 		GLuint VAO, VBO, EBO;
 
 
@@ -53,6 +65,7 @@ namespace ph
 
 		Shader* s;
 
+		Material* defaultMaterial;
 
 		// ???
 		std::vector<Mesh> meshes;

@@ -131,7 +131,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="photon\facility\AssetManager.cpp" />
     <ClCompile Include="dep\glad\glad.c" />
+    <ClCompile Include="photon\util\Angle.cpp" />
     <ClCompile Include="photon\util\FileUtil.cpp" />
     <ClCompile Include="photon\gfx\Model.cpp" />
     <ClCompile Include="photon\Engine.cpp" />
@@ -140,15 +142,22 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="photon\util\Transform.cpp" />
     <ClCompile Include="photon\gfx\Shader.cpp" />
-    <ClCompile Include="photon\gfx\SceneRenderer.cpp" />
+    <ClCompile Include="photon\gfx\Renderer\SceneRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dep\stb\stb_image.h" />
+    <ClInclude Include="dep\stb\stb_image_write.h" />
+    <ClInclude Include="dep\stb\stb_perlin.h" />
+    <ClInclude Include="photon\facility\AssetManager.h" />
     <ClInclude Include="dep\glad\glad.h" />
     <ClInclude Include="dep\glad\KHR.h" />
     <ClInclude Include="dep\json.h" />
     <ClInclude Include="dep\rang.h" />
     <ClInclude Include="dep\tiny_obj_loader.h" />
     <ClInclude Include="photon\gfx\Drawable.h" />
+    <ClInclude Include="photon\gfx\Renderer\RendererObjects.h" />
+    <ClInclude Include="photon\gfx\Texture.h" />
+    <ClInclude Include="photon\util\Angle.h" />
     <ClInclude Include="photon\util\FileUtil.h" />
     <ClInclude Include="photon\gfx\Model.h" />
     <ClInclude Include="photon\Engine.h" />
@@ -156,7 +165,7 @@
     <ClInclude Include="photon\facility\Logger.h" />
     <ClInclude Include="photon\util\Transform.h" />
     <ClInclude Include="photon\gfx\Shader.h" />
-    <ClInclude Include="photon\gfx\SceneRenderer.h" />
+    <ClInclude Include="photon\gfx\Renderer\SceneRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shader\deferred.frag" />

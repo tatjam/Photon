@@ -54,8 +54,6 @@ namespace ph
 
 	void Mesh::render(glm::mat4 world, glm::mat4 view, glm::mat4 proj, Shader* shader)
 	{
-		shader->use();
-
 		// Push the matrices
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->pr, "world"), 1, GL_FALSE, glm::value_ptr(world));
@@ -76,7 +74,23 @@ namespace ph
 	{
 		for (int i = 0; i < meshes.size(); i++)
 		{
-			meshes[i].render(world, view, proj, s);
+			if (meshes[i].mat != NULL)
+			{
+				meshes[i].mat->use();
+				meshes[i].render(world, view, proj, meshes[i].mat->shader);
+			}
+			else
+			{
+				if (defaultMaterial != NULL)
+				{
+					defaultMaterial->use();
+					meshes[i].render(world, view, proj, defaultMaterial->shader);
+				}
+				else
+				{
+					// Use engine global shader
+				}
+			}
 		}
 	}
 
@@ -146,6 +160,7 @@ namespace ph
 
 					worker.pX = vx; worker.pY = vy; worker.pZ = vz;
 					worker.nX = nx; worker.nY = ny; worker.nZ = nz;
+					worker.tX = tx; worker.tY = ty;
 					n.vertices.push_back(worker);
 					n.indices.push_back(vIndex);
 					vIndex++;
@@ -153,9 +168,8 @@ namespace ph
 
 				indexOffset += fv;
 
-				// Material (TODO)
-				//shapes[i].mesh.material_ids[p];
 
+				// Material info is loaded to an LMaterial per mesh
 			}
 
 

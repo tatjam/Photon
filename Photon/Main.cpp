@@ -12,11 +12,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "photon/gfx/SceneRenderer.h"
+
+#include "photon/facility/AssetManager.h"
+
+
+#include "photon/gfx/renderer/SceneRenderer.h"
+
+#include <chrono>
+#include <thread>
 
 using namespace ph;
 
-#define rad glm::radians
+
 #define tos std::to_string
 
 Engine* gl;
@@ -77,6 +84,11 @@ int main()
 		(char*)glGetString(GL_VENDOR) << "|" << (char*)glGetString(GL_RENDERER) << endlog; 
 
 
+	AssetManager assets = AssetManager(&engine);
+
+	std::string n = "res/test.obj";
+	engine.log(INF) << assets.makeName(n) << endlog;
+
 	Shader shader(&engine);
 	shader.load("res/shader/normal.vert", "res/shader/normal.frag");
 
@@ -113,6 +125,8 @@ int main()
 	float dt = 0.0f;
 	float rdt = 0.0f;
 
+	float t = 0.0f;
+
 	glfwSwapInterval(0);
 
 	double prevTime = 0.0;
@@ -128,20 +142,33 @@ int main()
 
 	LightScene scene;
 	scene.pointLightCount++;
-	scene.pointLights[0] = PointLight({ 4,2,0 }, { 1, 0, 1 });
+	scene.pointLights[0] = PointLight({ 4,2,0 }, { 1, 1, 1 });
 
-	SceneRenderer renderer = SceneRenderer(&dr, width, height, &engine, &defshader, &postshader, &scene);
+	LowCamera cam;
+	cam.pos = { 3, 3, 3 };
+	cam.target = { 0, 0, 0 };
 
-	renderer.view = view;
-	renderer.proj = proj;
+	SceneRenderer renderer = SceneRenderer(&dr, width, height, &engine, &defshader, &postshader, &scene, &cam);
 
+	Texture* tex = assets.loadTexture("res/test.png");
+
+	Material mat = Material();
+	mat.shader = &shader;
+	mat.properties["diffColor"] = v3Property(glm::vec3(1.0f, 0.0f, 0.0f));
+	mat.properties["baseTex"] = tProperty(tex);
 	renderer.cameraPos = { 0, 0, -4.5 };
+
+	m.defaultMaterial = &mat;
 
 	int prevX = width;
 	int prevY = height;
 
+	renderer.resize(width, height);
+
 	while (!glfwWindowShouldClose(window))
 	{		
+		cam.pos = { sin(t), sin(t), cos(t) };
+
 		int newX, newY;
 		glfwGetWindowSize(window, &newX, &newY);
 
@@ -149,14 +176,10 @@ int main()
 		{
 			glfwGetFramebufferSize(window, &width, &height);
 			glViewport(0, 0, width, height);
-			renderer.fillBuffers(newX, newY);
+			renderer.resize(width, height);
 			prevX = newX; prevY = newY;
 			width = newX; height = newY;
-			proj = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.05f, 250.0f);
-			renderer.proj = proj;
 		}
-		view = glm::rotate(view, rad(25.0f) * dt, { 0, 1, 0 });
-		renderer.view = view;
 		/*world = glm::rotate(world, rad(25.0f) * dt, { 0, 1, 0 });
 		world = glm::rotate(world, rad(25.0f) * dt, { 1, 0, 0 });*/
 
@@ -196,9 +219,15 @@ int main()
 		// Swap the screen buffers
 		glfwSwapBuffers(window);
 
+		// Frame speed limiting the easy way :P
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(4));
+
 		dt = glfwGetTime() - prevTime;
 
 		timer += dt;
+
+		t += dt;
 
 
 		if (timer >= 0.5f)
@@ -209,6 +238,8 @@ int main()
 			glfwSetWindowTitle(window, dts.c_str());
 			timer = 0.0f;
 		}
+		
+
 
 	}
 
