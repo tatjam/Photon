@@ -57,10 +57,12 @@ namespace ph
 		// ???
 		std::vector<Mesh> meshes;
 
-		virtual void render();
+		void render(glm::mat4 view, glm::mat4 proj);
 
 		// TODO: Optimize stuff for our indexed renderer
 		// Basically make shared vertices disappear
+
+		glm::mat4 getMatrix();
 
 		void load(std::string objpath);
 

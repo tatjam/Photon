@@ -1,11 +1,11 @@
 #version 330 core
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec3 normal;
+layout(location = 2) in vec2 texCoords;
 
-layout(location = 0) in vec3 pos;
-layout(location = 1) in vec3 nor;
-layout(location = 2) in vec2 tex;
-
-out vec3 normal;
-out vec3 wPos;
+out vec3 FragPos;
+out vec2 TexCoords;
+out vec3 Normal;
 
 uniform mat4 world;
 uniform mat4 view;
@@ -13,8 +13,11 @@ uniform mat4 proj;
 
 void main()
 {
-	gl_Position = proj * view * world * vec4(pos, 1.0f);
-	//gl_Position = vec4(pos, 1.0f);
-	normal = nor;
-	wPos = (world * vec4(pos, 1.0f)).xyz;
+	vec4 worldPos = world * vec4(position, 1.0f);
+	FragPos = worldPos.xyz;
+	gl_Position = proj * view * worldPos;
+	TexCoords = texCoords;
+
+	mat3 normalMatrix = transpose(inverse(mat3(world)));
+	Normal = normalMatrix * normal;
 }

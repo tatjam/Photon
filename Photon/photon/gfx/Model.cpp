@@ -67,7 +67,12 @@ namespace ph
 		glBindVertexArray(0);
 	}
 
-	void Model::render()
+	glm::mat4 Model::getMatrix()
+	{
+		return world;
+	}
+
+	void Model::render(glm::mat4 view, glm::mat4 proj)
 	{
 		for (int i = 0; i < meshes.size(); i++)
 		{

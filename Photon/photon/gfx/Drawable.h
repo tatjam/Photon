@@ -11,7 +11,12 @@ namespace ph
 	{
 	public:
 
-		virtual void render()
+		virtual glm::mat4 getMatrix()
+		{
+			return glm::mat4();
+		}
+
+		virtual void render(glm::mat4 view, glm::mat4 proj)
 		{
 
 		}

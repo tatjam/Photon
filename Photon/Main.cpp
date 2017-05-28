@@ -96,14 +96,15 @@ int main()
 	glm::mat4 proj;
 
 	world = glm::translate(world, { 0, 0, 0 });
-	view = glm::translate(world, { 2, 0, -4.5 });
+	view = glm::translate(world, { 0, 0, -4.5 });
 	proj = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.05f, 250.0f);
 
 	//proj = glm::perspective()
 
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
 
 	float dt = 0.0f;
 	float rdt = 0.0f;
@@ -123,7 +124,16 @@ int main()
 
 	dr.push_back(&m);
 
-	SceneRenderer renderer = SceneRenderer(&dr, width, height, &engine, &fullshader);
+	LightScene scene;
+	scene.pointLightCount++;
+	scene.pointLights[0] = PointLight({ 4,0,0 }, { 1, 0, 1 });
+
+	SceneRenderer renderer = SceneRenderer(&dr, width, height, &engine, &fullshader, &scene);
+
+	renderer.view = view;
+	renderer.proj = proj;
+
+	renderer.cameraPos = { 0, 0, -4.5 };
 
 	while (!glfwWindowShouldClose(window))
 	{		
@@ -141,6 +151,14 @@ int main()
 		{
 			renderer.wireframe = !renderer.wireframe;
 		}
+		if (engine.keyPress(GLFW_KEY_S))
+		{
+			renderer.debugMode++;
+			if(renderer.debugMode >= 5)
+			{
+				renderer.debugMode = 0;
+			}
+		}
 
 		engine.postUpdate(dt);
 
@@ -153,9 +171,6 @@ int main()
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
-
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		renderer.render();
 
