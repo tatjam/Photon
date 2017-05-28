@@ -48,7 +48,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
 	GLFWwindow* window = glfwCreateWindow(wwidth, wheight, "Hello World!", nullptr, nullptr);
@@ -80,8 +80,11 @@ int main()
 	Shader shader(&engine);
 	shader.load("res/shader/normal.vert", "res/shader/normal.frag");
 
-	Shader fullshader(&engine);
-	fullshader.load("res/shader/fullscreen.vert", "res/shader/fullscreen.frag");
+	Shader defshader(&engine);
+	defshader.load("res/shader/deferred.vert", "res/shader/deferred.frag");
+
+	Shader postshader(&engine);
+	postshader.load("res/shader/postprocess.vert", "res/shader/postprocess.frag");
 
 	Model m = Model(&engine, &shader);
 	m.load("res/test.obj");
@@ -117,8 +120,6 @@ int main()
 	float slowTimer = 0.0f;
 	// Game loop
 
-	m.view = view;
-	m.proj = proj;
 
 	std::vector<Drawable*> dr;
 
@@ -128,15 +129,31 @@ int main()
 	scene.pointLightCount++;
 	scene.pointLights[0] = PointLight({ 4,0,0 }, { 1, 0, 1 });
 
-	SceneRenderer renderer = SceneRenderer(&dr, width, height, &engine, &fullshader, &scene);
+	SceneRenderer renderer = SceneRenderer(&dr, width, height, &engine, &defshader, &postshader, &scene);
 
 	renderer.view = view;
 	renderer.proj = proj;
 
 	renderer.cameraPos = { 0, 0, -4.5 };
 
+	int prevX = width;
+	int prevY = height;
+
 	while (!glfwWindowShouldClose(window))
 	{		
+		int newX, newY;
+		glfwGetWindowSize(window, &newX, &newY);
+
+		if (newX != prevX || newY != prevY)
+		{
+			glfwGetFramebufferSize(window, &width, &height);
+			glViewport(0, 0, width, height);
+			renderer.fillBuffers(newX, newY);
+			prevX = newX; prevY = newY;
+			width = newX; height = newY;
+			proj = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.05f, 250.0f);
+			renderer.proj = proj;
+		}
 
 		world = glm::rotate(world, rad(25.0f) * dt, { 0, 1, 0 });
 		world = glm::rotate(world, rad(25.0f) * dt, { 1, 0, 0 });

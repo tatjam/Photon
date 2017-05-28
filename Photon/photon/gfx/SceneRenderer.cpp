@@ -11,6 +11,33 @@ namespace ph
 		glBindVertexArray(0);
 	}
 
+	void SceneRenderer::uploadLightScene()
+	{
+
+		glUniform1i(glGetUniformLocation(deferredShader->pr, "pLightCount"), lightScene->pointLightCount);
+
+		for (int i = 0; i < lightScene->pointLightCount; i++)
+		{
+			std::string lName = "pointLights[";
+			lName.append(std::to_string(i));
+			lName += ']';
+			glUniform3f(glGetUniformLocation(deferredShader->pr, (lName + ".pos").c_str()),
+				lightScene->pointLights[i].pos.x, lightScene->pointLights[i].pos.y, lightScene->pointLights[i].pos.z);
+			glUniform3f(glGetUniformLocation(deferredShader->pr, (lName + ".col").c_str()),
+				lightScene->pointLights[i].col.r, lightScene->pointLights[i].col.g, lightScene->pointLights[i].col.b);
+			glUniform1f(glGetUniformLocation(deferredShader->pr, (lName + ".linear").c_str()),
+				lightScene->pointLights[i].linear);
+			glUniform1f(glGetUniformLocation(deferredShader->pr, (lName + ".quadratic").c_str()),
+				lightScene->pointLights[i].quadratic);
+		}
+
+		glUniform3f(glGetUniformLocation(deferredShader->pr, "dirLight.dir"),
+			lightScene->dirLight.direction.x, lightScene->dirLight.direction.y, lightScene->dirLight.direction.z);
+		glUniform3f(glGetUniformLocation(deferredShader->pr, "dirLight.col"),
+			lightScene->dirLight.direction.r, lightScene->dirLight.direction.g, lightScene->dirLight.direction.b);
+
+	}
+
 	void SceneRenderer::render()
 	{
 		// Render scene into our framebuffer
@@ -37,35 +64,18 @@ namespace ph
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 
-		// Lighting pass, do the lighting (TODO)
-		// This is also the post processing pass!
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		// Lighting pass, do the lighting and deferred compositing
+		glBindFramebuffer(GL_FRAMEBUFFER, pBuffer);
 		{
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			shader->use();
-			glUniform3f(glGetUniformLocation(shader->pr, "viewPos"), cameraPos.x, cameraPos.y, cameraPos.z);
-			glUniform3f(glGetUniformLocation(shader->pr, "ambient"), 
+			deferredShader->use();
+			glUniform3f(glGetUniformLocation(deferredShader->pr, "viewPos"), cameraPos.x, cameraPos.y, cameraPos.z);
+			glUniform3f(glGetUniformLocation(deferredShader->pr, "ambient"),
 				lightScene->ambient.r, lightScene->ambient.g, lightScene->ambient.b);
-			glUniform1i(glGetUniformLocation(shader->pr, "renderMode"), debugMode);
+			glUniform1i(glGetUniformLocation(deferredShader->pr, "renderMode"), debugMode);
 
-			glUniform1i(glGetUniformLocation(shader->pr, "pLightCount"), lightScene->pointLightCount);
-
-			// LightScene writing
-			for (int i = 0; i < lightScene->pointLightCount; i++)
-			{
-				std::string lName = "pointLights[";
-				lName.append(std::to_string(i));
-				lName += ']';
-				glUniform3f(glGetUniformLocation(shader->pr, (lName + ".pos").c_str()),
-					lightScene->pointLights[i].pos.x, lightScene->pointLights[i].pos.y, lightScene->pointLights[i].pos.z);
-				glUniform3f(glGetUniformLocation(shader->pr, (lName + ".col").c_str()),
-					lightScene->pointLights[i].col.r, lightScene->pointLights[i].col.g, lightScene->pointLights[i].col.b);
-				glUniform1f(glGetUniformLocation(shader->pr, (lName + ".linear").c_str()),
-					lightScene->pointLights[i].linear);
-				glUniform1f(glGetUniformLocation(shader->pr, (lName + ".quadratic").c_str()),
-					lightScene->pointLights[i].quadratic);
-			}
-
+			uploadLightScene();
+			
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, gPos);
 			glActiveTexture(GL_TEXTURE1);
@@ -78,6 +88,16 @@ namespace ph
 			fullscreenQuad();
 		}
 
+		// Last pass, post processing and finally presenting to canvas
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		{
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			postShader->use();
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, pColor);
+			fullscreenQuad();
+		}
+
 		
 	}
 
@@ -85,7 +105,7 @@ namespace ph
 	{
 		bool err = false;
 
-		en->log(INF) << "Generating SceneRenderer renderbuffers (GL)" << endlog;
+		en->log(INF) << "Generating SceneRenderer gBuffers (GL)" << endlog;
 
 		// Gbuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
@@ -124,22 +144,60 @@ namespace ph
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		{
-			en->log(ERR) << "Error while generating the buffers! Framebuffer not complete" << endlog;
+			en->log(ERR) << "Error while generating the gBuffers! gBuffer not complete" << endlog;
 			err = true;
 		}
 			
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		if (!err)
 		{
-			en->log(WIN) << "Successfully generated buffers" << endlog;
+			en->log(WIN) << "Successfully generated gBuffers" << endlog;
+		}
+		else
+		{
+			en->log(WRN) << "Could not generate gBuffers properly!" << endlog;
+		}
+
+		err = false;
+
+		// pBuffers
+		en->log(INF) << "Generating SceneRenderer pBuffers (GL)" << endlog;
+
+		glBindTexture(GL_TEXTURE_2D, pColor);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glBindRenderbuffer(GL_RENDERBUFFER, pDepth);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, pBuffer);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pColor, 0);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pDepth);
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		{
+			en->log(ERR) << "Error while generating the pBuffers! pBuffer not complete" << endlog;
+			err = true;
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		if (!err)
+		{
+			en->log(WIN) << "Successfully generated pBuffers" << endlog;
+		}
+		else
+		{
+			en->log(WRN) << "Could not generate pBuffers properly!" << endlog;
 		}
 
 	}
 
 	SceneRenderer::SceneRenderer(std::vector<Drawable*>* dr, int width, int height, 
-		Engine* engine, Shader* shader, LightScene* scene)
+		Engine* engine, Shader* defShader, Shader* postShader, LightScene* scene)
 	{
-		this->shader = shader;
+		this->deferredShader = defShader;
+		this->postShader = postShader;
+
 		this->lightScene = scene;
 		en = engine;
 
@@ -149,6 +207,11 @@ namespace ph
 		glGenFramebuffers(1, &gBuffer);
 		glGenRenderbuffers(1, &gDepth);
 		glGenTextures(1, &gAlb);
+
+		// PBuffer
+		glGenFramebuffers(1, &pBuffer);
+		glGenTextures(1, &pColor);
+		glGenRenderbuffers(1, &pDepth);
 
 
 
@@ -175,11 +238,14 @@ namespace ph
 
 		drawables = dr;
 
-		shader->use();
+		defShader->use();
 
-		glUniform1i(glGetUniformLocation(shader->pr, "gPosition"), 0);
-		glUniform1i(glGetUniformLocation(shader->pr, "gNormal"), 1);
-		glUniform1i(glGetUniformLocation(shader->pr, "gAlbedo"), 2);
+		glUniform1i(glGetUniformLocation(defShader->pr, "gPosition"), 0);
+		glUniform1i(glGetUniformLocation(defShader->pr, "gNormal"), 1);
+		glUniform1i(glGetUniformLocation(defShader->pr, "gAlbedo"), 2);
+
+		postShader->use();
+		glUniform1i(glGetUniformLocation(postShader->pr, "hdrBuffer"), 0);
 
 	}
 

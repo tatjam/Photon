@@ -39,9 +39,27 @@ namespace ph
 		}
 	};
 
+	struct DirectionalLight
+	{
+		glm::vec3 direction = { 0, 0, 0 };
+		glm::vec3 color = { 0, 0, 0 };
+
+		DirectionalLight(glm::vec3 direction, glm::vec3 color)
+		{
+			this->direction = direction; this->color = color;
+		}
+
+		DirectionalLight()
+		{
+			this->direction = { 0, 0, 0 }; this->color = { 0, 0, 0 };
+		}
+	};
+
 	struct LightScene
 	{
 		glm::vec3 ambient = { 0.05f, 0.05f, 0.05f };
+
+		DirectionalLight dirLight;
 
 		PointLight pointLights[MAX_PLIGHTS];
 		int pointLightCount = 0;
@@ -57,7 +75,10 @@ namespace ph
 	// gPos: Position Data -> (RGB)
 	// gNrm: Normal Data -> (RGB) 
 	// gAlb: Albedo/Spec Data -> (RGB: Color) (A: Albedo)
+	// gShadow: Stores shadowmap information, allows 4 different shadow casters (Could be redone)
 	// gDepth is the depth buffer but is not really part of the Deffered Renderer
+
+	// Not really used by the user, but is used by SceneManager under the hood
 	class SceneRenderer
 	{
 
@@ -65,11 +86,13 @@ namespace ph
 
 		GLuint gBuffer, gPos, gNrm, gAlb, gDepth; // More to be added
 
+		GLuint pBuffer, pColor, pDepth;
+
 		GLuint quadVBO, quadVAO;
 
 		void fullscreenQuad();
 
-	
+		void uploadLightScene();
 
 	public:
 
@@ -92,10 +115,11 @@ namespace ph
 
 		Engine* en;
 
-		// This shader is applied in the final screen quad
-		// Basically a post processing shader
-		// !!IT ALSO DOES DEFERRED LIGHT PASS!!
-		Shader* shader;
+		// This shader is the deferred rendering shader
+		Shader* deferredShader;
+
+		// This shader is the post processing shader
+		Shader* postShader;
 
 		std::vector<Drawable*>* drawables;
 
@@ -104,7 +128,8 @@ namespace ph
 
 		void render();
 
-		SceneRenderer(std::vector<Drawable*>* dr, int w, int h, Engine* engine, Shader* shader, LightScene* scene);
+		SceneRenderer(std::vector<Drawable*>* dr, int w, int h, Engine* engine, 
+			Shader* defShader, Shader* postShader, LightScene* scene);
 		~SceneRenderer();
 	};
 

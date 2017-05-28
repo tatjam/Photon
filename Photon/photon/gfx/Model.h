@@ -47,7 +47,7 @@ namespace ph
 	{
 	public:
 
-		glm::mat4 world; glm::mat4 view; glm::mat4 proj;
+		glm::mat4 world;
 
 		Engine* e;
 

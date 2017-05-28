@@ -10,6 +10,12 @@ uniform sampler2D gAlbedo;
 
 uniform int renderMode;
 
+struct DirLight
+{
+	vec3 dir;
+	vec3 col;
+};
+
 struct PointLight
 {
 	vec3 pos;
@@ -20,6 +26,8 @@ struct PointLight
 };
 
 
+
+
 // Lights: (64 is an arbitrary number, it's the max limit)
 const int MAX_PLIGHTS = 64;
 
@@ -27,6 +35,8 @@ const int MAX_PLIGHTS = 64;
 uniform int pLightCount;
 
 uniform PointLight pointLights[MAX_PLIGHTS];
+
+uniform DirLight dirLight;
 
 uniform vec3 ambient;
 

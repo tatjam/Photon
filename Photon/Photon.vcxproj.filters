@@ -93,7 +93,9 @@
   <ItemGroup>
     <None Include="res\shader\normal.frag" />
     <None Include="res\shader\normal.vert" />
-    <None Include="res\shader\fullscreen.frag" />
-    <None Include="res\shader\fullscreen.vert" />
+    <None Include="res\shader\deferred.vert" />
+    <None Include="res\shader\deferred.frag" />
+    <None Include="res\shader\postprocess.vert" />
+    <None Include="res\shader\postprocess.frag" />
   </ItemGroup>
 </Project>
