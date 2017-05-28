@@ -99,8 +99,9 @@ int main()
 	glm::mat4 proj;
 
 	world = glm::translate(world, { 0, 0, 0 });
-	view = glm::translate(world, { 0, 0, -4.5 });
-	proj = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.05f, 250.0f);
+	world = glm::scale(world, glm::vec3(0.08f, 0.08f, 0.08f));
+	view = glm::translate(world, { 0, -1.0, -4.5 });
+	proj = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.05f, 550.0f);
 
 	//proj = glm::perspective()
 
@@ -127,7 +128,7 @@ int main()
 
 	LightScene scene;
 	scene.pointLightCount++;
-	scene.pointLights[0] = PointLight({ 4,0,0 }, { 1, 0, 1 });
+	scene.pointLights[0] = PointLight({ 4,2,0 }, { 1, 0, 1 });
 
 	SceneRenderer renderer = SceneRenderer(&dr, width, height, &engine, &defshader, &postshader, &scene);
 
@@ -154,9 +155,10 @@ int main()
 			proj = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.05f, 250.0f);
 			renderer.proj = proj;
 		}
-
-		world = glm::rotate(world, rad(25.0f) * dt, { 0, 1, 0 });
-		world = glm::rotate(world, rad(25.0f) * dt, { 1, 0, 0 });
+		view = glm::rotate(view, rad(25.0f) * dt, { 0, 1, 0 });
+		renderer.view = view;
+		/*world = glm::rotate(world, rad(25.0f) * dt, { 0, 1, 0 });
+		world = glm::rotate(world, rad(25.0f) * dt, { 1, 0, 0 });*/
 
 		m.world = world;
 
