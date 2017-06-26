@@ -3,8 +3,10 @@
 ## Important information
 
 #### Radians vs Degrees
-Any function that uses angles will take either a Angle object, these can either be Degrees or Radians.
-Check documentation for more info
+Any function that uses angles will take a Angle object, these can either be Degrees or Radians.
+Check documentation for more info.
+The basics are: ``rad(float x)`` will build an Angle with radians and ``deg(float x)`` will build an Angle with degrees.
+Once built the Angle can be get as Radians or Degress using the functions.
 
 ## Dependencies
 ----
